@@ -30,14 +30,11 @@ public class ReplacementSort {
         byte[] input,
         byte[] output)
         throws IOException {
-
         LinkedList<Run> runOffsets = new LinkedList<Run>();
-        Run xRun;
+        Run xRun = new Run(0, 0);
         String runFileName = "runFile.bin";
         DataOutputStream file2 = new DataOutputStream(new BufferedOutputStream(
             new FileOutputStream(runFileName)));
-
-      
         long numBlocks = file.length() / 8152;
         int outputIndex = 0;
         ByteBuffer inputBuffer = ByteBuffer.wrap(input);
@@ -61,7 +58,9 @@ public class ReplacementSort {
         heap = new MinHeap(heapArray, heapArray.length, 4096);
         boolean once = true;
         boolean finishHeap = true;
-        while (finishHeap) {
+        long filePointer = file.getFilePointer();
+        long fileLength = file.length();
+        while (finishHeap && xRun.getEnd() < fileLength) {
             xRun = new Run(file2.size(), 0);
             if (!once) {
                 if (heap.maxValueCount() > 0) {
@@ -73,9 +72,9 @@ public class ReplacementSort {
 
             }
             outputIndex = 0;
-            if (!inputBuffer.hasRemaining() && file.getFilePointer() < file
-                .length()) {
+            if (!inputBuffer.hasRemaining() && filePointer < fileLength) {
                 file.read(input);
+                filePointer += 8192;
                 inputBuffer = ByteBuffer.wrap(input);
             }
             while (heap.heapsize() > 0) {
@@ -86,15 +85,15 @@ public class ReplacementSort {
                     file2.write(output);
 
                     outputBuffer.rewind();
-                    
+
                     outputIndex = 0;
 
                     outputBuffer.clear();
                 }
 
-                if (!inputBuffer.hasRemaining() && file.getFilePointer() < file
-                    .length()) {
+                if (!inputBuffer.hasRemaining() && filePointer < fileLength) {
                     file.read(input);
+                    filePointer += 8192;
                     inputBuffer = ByteBuffer.wrap(input);
                 }
 
@@ -123,9 +122,8 @@ public class ReplacementSort {
             file2.write(output, 0, outputIndex * 16);
             xRun.setEnd(file2.size());
             runOffsets.add(xRun);
-
             outputBuffer.rewind();
-           
+
             once = false;
 
             outputBuffer.clear();
@@ -133,7 +131,6 @@ public class ReplacementSort {
         file2.flush();
         file2.close();
         return runOffsets;
-
     }
 
 
@@ -166,3 +163,5 @@ public class ReplacementSort {
     }
 
 }
+
+
