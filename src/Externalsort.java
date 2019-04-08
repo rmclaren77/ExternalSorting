@@ -24,18 +24,16 @@ import java.io.RandomAccessFile;
 import java.util.LinkedList;
 
 /**
+ * This class contains the main method, which takes in the bytes from the file
+ * and uses the ReplacementSort and MergeSort to sort the file
  * 
- * @author rmclaren
+ * @author rmclaren, swooty97
  * @version 3.31.19
- *          This class contains the main method, which takes in the bytes from
- *          the file and uses the ReplacementSort and MergeSort to sort the file
- *
  */
 public class Externalsort {
     private static byte[] in;
     private static byte[] out;
     private static Record[] heapArray;
-
 
     public static void main(String[] input) throws IOException {
 
@@ -44,22 +42,23 @@ public class Externalsort {
         out = new byte[8192];
         RandomAccessFile file = new RandomAccessFile(fileName, "rw");
         in = new byte[8192];
+
+        // heapArray filling with records
         for (int x = 0; x < 4096; x++) {
             heapArray[x] = new Record(0, Double.MAX_VALUE);
         }
         LinkedList<Run> offsetList = ReplacementSort.replacementSort(file,
-            heapArray, in, out);
+                heapArray, in, out);
         RandomAccessFile file2 = new RandomAccessFile("runFile.bin", "rw");
 
         /*
          * for (int x = 0; x < file.length() / 16 && x < 512; x++) {
          * System.out.println(file.readLong() + " " + file.readDouble());
-         * System.out.println(file.getFilePointer());
-         * }
+         * System.out.println(file.getFilePointer()); }
          */
         // fileName = fileName.substring(0, fileName.indexOf("."));
         MergeSort.mergeSort(file2, heapArray, in, out, offsetList, file,
-            (int)file2.length());
+                (int) file2.length());
         file2.close();
         file.close();
 
