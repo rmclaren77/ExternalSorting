@@ -4,46 +4,51 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
+/**
+ * 
+ * @author rmclaren, swooty97
+ * @version Apr 7, 2019
+ */
 public class MergeSort {
 
-    public static void mergeSort(
-        RandomAccessFile file,
-        Record[] heapArray,
-        byte[] in,
-        byte[] out,
-        LinkedList<Run> offsetList,
-        RandomAccessFile outputFile,
-        int blocks)
-        throws IOException {
+    /**
+     * 
+     * @param file
+     *            file reading from
+     * @param heapArray
+     *            heap array holding records
+     * @param in
+     * @param out
+     * @param offsetList
+     * @param outputFile
+     * @param blocks
+     * @throws IOException
+     *             read file exception
+     */
+    public static void mergeSort(RandomAccessFile file, Record[] heapArray,
+            byte[] in, byte[] out, LinkedList<Run> offsetList,
+            RandomAccessFile outputFile, int blocks) throws IOException {
         // RandomAccessFile outputFile = new RandomAccessFile(fileName +
         // "sorted.bin", "rw");
         if (offsetList.size() <= 8) {
 
             mergeSortSimple(file, heapArray, in, out, offsetList, outputFile,
-                false, blocks);
-/*
- * long length = outputFile.length();
- * int place = 0;
- * for (int x = 0; x < length; x += 8192 * 5) {
- * for (int y = 0; y < 5; y++) {
- * place = x + 8192 * y;
- * if (place >= length) {
- * return;
- * }
- * outputFile.seek(place);
- * System.out.print(outputFile.readLong() + " " + outputFile
- * .readDouble() + " ");
- * }
- * System.out.print("\n");
- * }
- */
+                    false, blocks);
+            /*
+             * long length = outputFile.length(); int place = 0; for (int x = 0;
+             * x < length; x += 8192 * 5) { for (int y = 0; y < 5; y++) { place
+             * = x + 8192 * y; if (place >= length) { return; }
+             * outputFile.seek(place); System.out.print(outputFile.readLong() +
+             * " " + outputFile .readDouble() + " "); } System.out.print("\n");
+             * }
+             */
 
             return;
         }
         else {
             long beg = file.length();
             mergeSortSimple(file, heapArray, in, out, offsetList, file, true,
-                blocks);
+                    blocks);
             for (int x = 0; x < 8; x++) {
 
                 if (x == 7) {
@@ -64,17 +69,23 @@ public class MergeSort {
 
     }
 
-
-    public static long mergeSortSimple(
-        RandomAccessFile file,
-        Record[] array,
-        byte[] in,
-        byte[] out,
-        LinkedList<Run> offsetList,
-        RandomAccessFile outputFile,
-        boolean overWrite,
-        int blocks)
-        throws IOException {
+    /**
+     * 
+     * @param file
+     * @param array
+     * @param in
+     * @param out
+     * @param offsetList
+     * @param outputFile
+     * @param overWrite
+     * @param blocks
+     * @return
+     * @throws IOException
+     */
+    public static long mergeSortSimple(RandomAccessFile file, Record[] array,
+            byte[] in, byte[] out, LinkedList<Run> offsetList,
+            RandomAccessFile outputFile, boolean overWrite, int blocks)
+            throws IOException {
 
         int printCount = 1;
 
@@ -103,7 +114,7 @@ public class MergeSort {
             checkRun[x] = true;
             tempRun = offsetList.get(x);
             readIn(file, array, in, out, tempRun, arrStart, arrEnd, x,
-                inputBuffer);
+                    inputBuffer);
 
         }
         ByteBuffer outputBuffer = ByteBuffer.wrap(out);
@@ -145,7 +156,7 @@ public class MergeSort {
                     }
                     else {
                         readIn(file, array, in, out, tempRun, arrStart, arrEnd,
-                            minX, inputBuffer);
+                                minX, inputBuffer);
                     }
                 }
             }
@@ -153,8 +164,8 @@ public class MergeSort {
             if (!outputBuffer.hasRemaining()) {
                 outputBuffer.flip();
                 if (!overWrite) {
-                    System.out.print(outputBuffer.getLong() + " " + outputBuffer
-                        .getDouble() + " ");
+                    System.out.print(outputBuffer.getLong() + " "
+                            + outputBuffer.getDouble() + " ");
                     if (printCount == 5) {
                         printCount = 1;
                         System.out.print("\n");
@@ -182,22 +193,35 @@ public class MergeSort {
         return 0;
     }
 
+    /**
+     * 
+     * @param file
+     *            file being read from
+     * @param array
+     *            array holding records
+     * @param in
+     *            input
+     * @param out
+     *            output
+     * @param tempRun
+     *            temporary run
+     * @param arrStart
+     *            array start
+     * @param arrEnd
+     *            array end
+     * @param index
+     *            index of
+     * @param inputBuffer
+     * @throws IOException
+     *             reading file exception
+     */
+    private static void readIn(RandomAccessFile file, Record[] array, byte[] in,
+            byte[] out, Run tempRun, int[] arrStart, int[] arrEnd, int index,
+            ByteBuffer inputBuffer) throws IOException {
 
-    private static void readIn(
-        RandomAccessFile file,
-        Record[] array,
-        byte[] in,
-        byte[] out,
-        Run tempRun,
-        int[] arrStart,
-        int[] arrEnd,
-        int index,
-        ByteBuffer inputBuffer)
-        throws IOException {
-
-        int tempBeg = (int)tempRun.getCurr();
-        file.seek((long)tempBeg);
-        int tempEnd = (int)tempRun.getEnd();
+        int tempBeg = (int) tempRun.getCurr();
+        file.seek((long) tempBeg);
+        int tempEnd = (int) tempRun.getEnd();
         int tempDiff;
         if (index == 0) {
             arrStart[index] = 0;

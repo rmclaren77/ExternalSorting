@@ -10,7 +10,7 @@ import java.util.LinkedList;
 
 /**
  * 
- * @author rmclaren
+ * @author rmclaren, swooty
  * @version 3.31.19
  * 
  *          This class is used for sorting 8 blocks of memory, creating the
@@ -19,32 +19,28 @@ import java.util.LinkedList;
 public class ReplacementSort {
     private static MinHeap heap;
 
-
     /**
-     * @throws IOException
+     * @throws IOException Reading file exception
      * @return the name of the runFile which will be used by the mergeSort
      */
-    public static LinkedList<Run> replacementSort(
-        RandomAccessFile file,
-        Record[] heapArray,
-        byte[] input,
-        byte[] output)
-        throws IOException {
+    public static LinkedList<Run> replacementSort(RandomAccessFile file,
+            Record[] heapArray, byte[] input, byte[] output)
+            throws IOException {
 
         LinkedList<Run> runOffsets = new LinkedList<Run>();
         Run xRun;
         String runFileName = "runFile.bin";
-        DataOutputStream file2 = new DataOutputStream(new BufferedOutputStream(
-            new FileOutputStream(runFileName)));
+        DataOutputStream file2 = new DataOutputStream(
+                new BufferedOutputStream(new FileOutputStream(runFileName)));
 
-      
-        long numBlocks = file.length() / 8152;
+        long numBlocks = file.length() / 8192;
         int outputIndex = 0;
         ByteBuffer inputBuffer = ByteBuffer.wrap(input);
 
         ByteBuffer outputBuffer = ByteBuffer.wrap(output);
         int heapIndex = 0;
 
+        // Reads input file to add records to heapArray
         for (int x = 0; x < 8; x++) {
             file.read(input);
             inputBuffer = ByteBuffer.wrap(input);
@@ -73,8 +69,8 @@ public class ReplacementSort {
 
             }
             outputIndex = 0;
-            if (!inputBuffer.hasRemaining() && file.getFilePointer() < file
-                .length()) {
+            if (!inputBuffer.hasRemaining()
+                    && file.getFilePointer() < file.length()) {
                 file.read(input);
                 inputBuffer = ByteBuffer.wrap(input);
             }
@@ -86,14 +82,14 @@ public class ReplacementSort {
                     file2.write(output);
 
                     outputBuffer.rewind();
-                    
+
                     outputIndex = 0;
 
                     outputBuffer.clear();
                 }
 
-                if (!inputBuffer.hasRemaining() && file.getFilePointer() < file
-                    .length()) {
+                if (!inputBuffer.hasRemaining()
+                        && file.getFilePointer() < file.length()) {
                     file.read(input);
                     inputBuffer = ByteBuffer.wrap(input);
                 }
@@ -108,8 +104,8 @@ public class ReplacementSort {
                 else {
 
                     temp = heap.removemin();
-                    if (temp.getDouble() == Double.MAX_VALUE && temp
-                        .getLong() == 0) {
+                    if (temp.getDouble() == Double.MAX_VALUE
+                            && temp.getLong() == 0) {
                         break;
                     }
 
@@ -125,7 +121,7 @@ public class ReplacementSort {
             runOffsets.add(xRun);
 
             outputBuffer.rewind();
-           
+
             once = false;
 
             outputBuffer.clear();
@@ -136,7 +132,11 @@ public class ReplacementSort {
 
     }
 
-
+    /**
+     * 
+     * @param array
+     *            array being evaluated
+     */
     private static void moveValues(Record[] array) {
         int begIndex = 0;
         int endIndex = array.length - 1;
