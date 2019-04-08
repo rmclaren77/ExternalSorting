@@ -1,5 +1,6 @@
 /**
  * Record class
+ * 
  * @author rmclaren, swooty
  * @version 4.1.19
  */
@@ -7,6 +8,7 @@ public class Record implements Comparable<Record> {
 
     private double doubleValue;
     private long longValue;
+
 
     /**
      * Record constructor
@@ -22,6 +24,7 @@ public class Record implements Comparable<Record> {
 
     }
 
+
     /**
      * Getter method for double
      * 
@@ -31,6 +34,7 @@ public class Record implements Comparable<Record> {
         return doubleValue;
     }
 
+
     /**
      * Getter method for long
      * 
@@ -39,6 +43,7 @@ public class Record implements Comparable<Record> {
     public long getLong() {
         return longValue;
     }
+
 
     /**
      * Setter method for double field
@@ -50,6 +55,7 @@ public class Record implements Comparable<Record> {
         doubleValue = d;
     }
 
+
     /**
      * Setter method for long field
      * 
@@ -60,6 +66,7 @@ public class Record implements Comparable<Record> {
         longValue = l;
     }
 
+
     /**
      * Print out values of long and double in string
      * 
@@ -69,11 +76,15 @@ public class Record implements Comparable<Record> {
         return longValue + " " + doubleValue;
     }
 
+
     /**
      * Compare key values.
      * 
+     * @param r
+     *            is the record being compared to
      * @return positive value if greater than, negative if less than, or 0 if
      *         equal to the record being compared
+     *
      */
     public int compareTo(Record r) {
         if (doubleValue < r.getDouble()) {

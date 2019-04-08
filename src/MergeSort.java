@@ -1,4 +1,4 @@
-import java.io.File;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -6,19 +6,17 @@ import java.util.LinkedList;
 
 /**
  * 
- * @author rmclaren swoot97
+ * @author rmclaren swooty97
  * @version 4.2.19
  *          This class handles the Mergesort part of the sorting. It takes in 8
  *          runs at a time and sorts them into one longer sorted run. If the
  *          original amount of runs is greater than 8, it will continue this
  *          process until there is only one run
  *
- * 
  */
 public class MergeSort {
 
     /**
-     * 
      * This is the general mergeSort method, which will pass different arguments
      * depending on if there are less than or more than 8 runs
      * 
@@ -38,7 +36,6 @@ public class MergeSort {
      *            is the total number of blocks
      * @throws IOException
      */
-
     public static void mergeSort(
         RandomAccessFile file,
         Record[] heapArray,
@@ -48,20 +45,33 @@ public class MergeSort {
         RandomAccessFile outputFile,
         int blocks)
         throws IOException {
-        // RandomAccessFile outputFile = new RandomAccessFile(fileName +
-        // "sorted.bin", "rw");
+        /*
+         * RandomAccessFile outputFile = new RandomAccessFile(fileName +
+         * "sorted.bin", "rw");
+         */
+
+        // Calls the mergeSortSimpleMethod, passing in the actual outputFile
+        // where the run will be printed to
         if (offsetList.size() <= 8) {
 
             mergeSortSimple(file, heapArray, in, out, offsetList, outputFile,
                 false, blocks);
-            /*
-             * long length = outputFile.length(); int place = 0; for (int x = 0;
-             * x < length; x += 8192 * 5) { for (int y = 0; y < 5; y++) { place
-             * = x + 8192 * y; if (place >= length) { return; }
-             * outputFile.seek(place); System.out.print(outputFile.readLong() +
-             * " " + outputFile .readDouble() + " "); } System.out.print("\n");
-             * }
-             */
+/*
+ * long length = outputFile.length();
+ * int place = 0;
+ * for (int x = 0; x < length; x += 8192 * 5) {
+ * for (int y = 0; y < 5; y++) {
+ * place = x + 8192 * y;
+ * if (place >= length) {
+ * return;
+ * }
+ * outputFile.seek(place);
+ * System.out.print(outputFile.readLong() + " " + outputFile
+ * .readDouble() + " ");
+ * }
+ * System.out.print("\n");
+ * }
+ */
 
             return;
         }
@@ -97,17 +107,25 @@ public class MergeSort {
 
 
     /**
+     * This sorts the first eight runs using mergeSort
      * 
      * @param file
+     *            is the run file
      * @param array
+     *            is the array allocated to hold the 8 runs
      * @param in
+     *            is the input buffer
      * @param out
+     *            is the output buffer
      * @param offsetList
+     *            is the list of runs and their offsets in the run file
      * @param outputFile
+     *            is the file that the sorted run will be printed out to
      * @param overWrite
+     *            tells whether or not you are writing the new run to the run
+     *            File
      * @param blocks
-     * @return
-     * @throws IOException
+     *            is the total number of blocks
      */
     public static void mergeSortSimple(
         RandomAccessFile file,
@@ -119,10 +137,9 @@ public class MergeSort {
         boolean overWrite,
         int blocks)
         throws IOException {
-
         int printCount = 1;
         int outputIndex = 0;
-        long writeIndex;// index of where the file will be writing to
+        long writeIndex; // index of where the file will be writing to
         if (!overWrite) {
             writeIndex = 0;
         }
@@ -205,7 +222,8 @@ public class MergeSort {
                                 }
 
                             }
-                            while (arrStart[finalRunIndex] < arrEnd[finalRunIndex]) {
+                            while (arrStart[finalRunIndex] 
+                                < arrEnd[finalRunIndex]) {
                                 if (outputBuffer.hasRemaining()) {
                                     outputBuffer.putLong(array[minIndex]
                                         .getLong());
@@ -301,7 +319,6 @@ public class MergeSort {
             outputBuffer.clear();
 
         }
-        return;
     }
 
 
@@ -364,7 +381,6 @@ public class MergeSort {
             arrEnd[index] = arrStart[index] + 512;
         }
         inputBuffer.rewind();
-        Record tempRec = null;
         for (int y = arrStart[index]; y < arrEnd[index]; y++) {
 
             long l = inputBuffer.getLong();

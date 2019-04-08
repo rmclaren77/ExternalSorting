@@ -7,9 +7,6 @@ import student.TestCase;
  * @version 4.5.19
  *          Tests to make sure the runs are sorted
  *
- * 
- * @author rmclaren, swooty97
- * @version Apr 7, 2019
  */
 public class SortTest extends TestCase {
     /**
@@ -20,12 +17,11 @@ public class SortTest extends TestCase {
      */
     public void testSort() throws IOException {
 
-        int m = 2400;
+        int m = 340;
         m = m - m % 8;
-        Genfile_proj3.main(new String[] { "testFile" + m + ".bin", "" + m });
+        GenfileProj3.main(new String[] { "testFile" + m + ".bin", "" + m });
         Externalsort.main(new String[] { "testFile" + m + ".bin" });
-        assertTrue(m % 8 == 0);
-
+        assertEquals(m % 8, 0);
     }
 
 }

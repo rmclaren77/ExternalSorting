@@ -2,15 +2,13 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.LinkedList;
 
 /**
  * 
- * @author rmclaren, swooty
+ * @author rmclaren
  * @version 3.31.19
  * 
  *          This class is used for sorting 8 blocks of memory, creating the
@@ -21,33 +19,37 @@ public class ReplacementSort {
 
 
     /**
+     * Uses a minHeap to sort the file into runs
+     * 
+     * @param file
+     *            is the file where the bytes are retrieved from
+     * @param heapArray
+     *            is the array for the heap
+     * @param input
+     *            is the input array
+     * @param output
+     *            is the output array
+     * @return a LinkedList of runs
      * @throws IOException
-     *             Reading file exception
-     * @return the name of the runFile which will be used by the mergeSort
+     *             if input output is incorrect
      */
-
     public static LinkedList<Run> replacementSort(
         RandomAccessFile file,
         Record[] heapArray,
         byte[] input,
         byte[] output)
         throws IOException {
-
         LinkedList<Run> runOffsets = new LinkedList<Run>();
         Run xRun = new Run(0, 0);
         String runFileName = "runFile.bin";
-
         DataOutputStream file2 = new DataOutputStream(new BufferedOutputStream(
             new FileOutputStream(runFileName)));
-        long numBlocks = file.length() / 8152;
-
         int outputIndex = 0;
         ByteBuffer inputBuffer = ByteBuffer.wrap(input);
 
         ByteBuffer outputBuffer = ByteBuffer.wrap(output);
         int heapIndex = 0;
 
-        // Reads input file to add records to heapArray
         for (int x = 0; x < 8; x++) {
             file.read(input);
             inputBuffer = ByteBuffer.wrap(input);
@@ -78,7 +80,6 @@ public class ReplacementSort {
 
             }
             outputIndex = 0;
-
             if (!inputBuffer.hasRemaining() && filePointer < fileLength) {
                 file.read(input);
                 filePointer += 8192;
@@ -142,9 +143,10 @@ public class ReplacementSort {
 
 
     /**
+     * Shifts the maxValues to the end of the array
      * 
      * @param array
-     *            array being evaluated
+     *            is the array of records
      */
     private static void moveValues(Record[] array) {
         int begIndex = 0;
