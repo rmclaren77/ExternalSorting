@@ -7,11 +7,10 @@ import java.util.LinkedList;
 /**
  * 
  * @author rmclaren swooty97
- * @version 4.2.19
- *          This class handles the Mergesort part of the sorting. It takes in 8
- *          runs at a time and sorts them into one longer sorted run. If the
- *          original amount of runs is greater than 8, it will continue this
- *          process until there is only one run
+ * @version 4.2.19 This class handles the Mergesort part of the sorting. It
+ *          takes in 8 runs at a time and sorts them into one longer sorted run.
+ *          If the original amount of runs is greater than 8, it will continue
+ *          this process until there is only one run
  *
  */
 public class MergeSort {
@@ -36,15 +35,9 @@ public class MergeSort {
      *            is the total number of blocks
      * @throws IOException
      */
-    public static void mergeSort(
-        RandomAccessFile file,
-        Record[] heapArray,
-        byte[] in,
-        byte[] out,
-        LinkedList<Run> offsetList,
-        RandomAccessFile outputFile,
-        int blocks)
-        throws IOException {
+    public static void mergeSort(RandomAccessFile file, Record[] heapArray,
+            byte[] in, byte[] out, LinkedList<Run> offsetList,
+            RandomAccessFile outputFile, int blocks) throws IOException {
         /*
          * RandomAccessFile outputFile = new RandomAccessFile(fileName +
          * "sorted.bin", "rw");
@@ -55,23 +48,15 @@ public class MergeSort {
         if (offsetList.size() <= 8) {
 
             mergeSortSimple(file, heapArray, in, out, offsetList, outputFile,
-                false, blocks);
-/*
- * long length = outputFile.length();
- * int place = 0;
- * for (int x = 0; x < length; x += 8192 * 5) {
- * for (int y = 0; y < 5; y++) {
- * place = x + 8192 * y;
- * if (place >= length) {
- * return;
- * }
- * outputFile.seek(place);
- * System.out.print(outputFile.readLong() + " " + outputFile
- * .readDouble() + " ");
- * }
- * System.out.print("\n");
- * }
- */
+                    false, blocks);
+            /*
+             * long length = outputFile.length(); int place = 0; for (int x = 0;
+             * x < length; x += 8192 * 5) { for (int y = 0; y < 5; y++) { place
+             * = x + 8192 * y; if (place >= length) { return; }
+             * outputFile.seek(place); System.out.print(outputFile.readLong() +
+             * " " + outputFile .readDouble() + " "); } System.out.print("\n");
+             * }
+             */
 
             return;
         }
@@ -81,7 +66,7 @@ public class MergeSort {
         else {
             long beg = file.length();
             mergeSortSimple(file, heapArray, in, out, offsetList, file, true,
-                blocks);
+                    blocks);
             for (int x = 0; x < 8; x++) {
                 // Grabs the last Run, changes the offsets of the run(where it
                 // starts and ends in the runFile), and adds it to the end of
@@ -105,7 +90,6 @@ public class MergeSort {
 
     }
 
-
     /**
      * This sorts the first eight runs using mergeSort
      * 
@@ -127,16 +111,10 @@ public class MergeSort {
      * @param blocks
      *            is the total number of blocks
      */
-    public static void mergeSortSimple(
-        RandomAccessFile file,
-        Record[] array,
-        byte[] in,
-        byte[] out,
-        LinkedList<Run> offsetList,
-        RandomAccessFile outputFile,
-        boolean overWrite,
-        int blocks)
-        throws IOException {
+    public static void mergeSortSimple(RandomAccessFile file, Record[] array,
+            byte[] in, byte[] out, LinkedList<Run> offsetList,
+            RandomAccessFile outputFile, boolean overWrite, int blocks)
+            throws IOException {
         int printCount = 1;
         int outputIndex = 0;
         long writeIndex; // index of where the file will be writing to
@@ -171,7 +149,7 @@ public class MergeSort {
             tempRun = offsetList.get(x);
             // Reads values into the array from the runs
             readIn(file, array, in, out, tempRun, arrStart, arrEnd, x,
-                inputBuffer);
+                    inputBuffer);
 
         }
         ByteBuffer outputBuffer = ByteBuffer.wrap(out);
@@ -200,9 +178,8 @@ public class MergeSort {
                 }
             }
             if (minIndex >= 0) {
-                outputBuffer.putLong(array[minIndex].getLong());
-                outputBuffer.putDouble(array[minIndex].getDouble());
-                outputIndex += 16;
+                outputIndex += outputBufferHelper(outputBuffer, array,
+                        minIndex);
                 arrStart[minX] += 1;
 
                 if (arrStart[minX] >= arrEnd[minX]) {
@@ -222,22 +199,18 @@ public class MergeSort {
                                 }
 
                             }
-                            while (arrStart[finalRunIndex] 
-                                < arrEnd[finalRunIndex]) {
+                            while (arrStart[finalRunIndex] < arrEnd[finalRunIndex]) {
                                 if (outputBuffer.hasRemaining()) {
-                                    outputBuffer.putLong(array[minIndex]
-                                        .getLong());
-                                    outputBuffer.putDouble(array[minIndex]
-                                        .getDouble());
-                                    outputIndex += 16;
+                                    outputIndex += outputBufferHelper(
+                                            outputBuffer, array, minIndex);
                                     arrStart[finalRunIndex] += 1;
                                 }
                                 if (!outputBuffer.hasRemaining()) {
                                     outputBuffer.flip();
                                     if (!overWrite) {
                                         System.out.print(outputBuffer.getLong()
-                                            + " " + outputBuffer.getDouble()
-                                            + " ");
+                                                + " " + outputBuffer.getDouble()
+                                                + " ");
                                         if (printCount == 5) {
                                             printCount = 1;
                                             System.out.print("\n");
@@ -246,23 +219,21 @@ public class MergeSort {
                                             printCount++;
                                         }
                                     }
-                                    outputBuffer.rewind();
-                                    outputFile.seek(writeIndex);
-                                    outputFile.write(out);
-                                    writeIndex += out.length;
-                                    outputBuffer.clear();
+                                    writeIndex += helperSimple(outputBuffer,
+                                            outputFile, out, writeIndex,
+                                            outputIndex);
                                     outputIndex = 0;
-
                                 }
 
                             }
                             while (!finalRun.atEnd()) {
                                 readIn(file, array, in, out, tempRun, arrStart,
-                                    arrEnd, minX, inputBuffer);
+                                        arrEnd, minX, inputBuffer);
                                 out = in;
                                 if (!overWrite) {
                                     System.out.print(outputBuffer.getLong()
-                                        + " " + outputBuffer.getDouble() + " ");
+                                            + " " + outputBuffer.getDouble()
+                                            + " ");
                                     if (printCount == 5) {
                                         printCount = 1;
                                         System.out.print("\n");
@@ -271,11 +242,9 @@ public class MergeSort {
                                         printCount++;
                                     }
                                 }
-                                outputBuffer.rewind();
-                                outputFile.seek(writeIndex);
-                                outputFile.write(out);
-                                writeIndex += out.length;
-                                outputBuffer.clear();
+                                writeIndex += helperSimple(outputBuffer,
+                                        outputFile, out, writeIndex,
+                                        outputIndex);
                                 outputIndex = 0;
 
                             }
@@ -284,7 +253,7 @@ public class MergeSort {
                     }
                     else {
                         readIn(file, array, in, out, tempRun, arrStart, arrEnd,
-                            minX, inputBuffer);
+                                minX, inputBuffer);
                     }
                 }
             }
@@ -292,8 +261,8 @@ public class MergeSort {
             if (!outputBuffer.hasRemaining()) {
                 outputBuffer.flip();
                 if (!overWrite) {
-                    System.out.print(outputBuffer.getLong() + " " + outputBuffer
-                        .getDouble() + " ");
+                    System.out.print(outputBuffer.getLong() + " "
+                            + outputBuffer.getDouble() + " ");
                     if (printCount == 5) {
                         printCount = 1;
                         System.out.print("\n");
@@ -302,11 +271,8 @@ public class MergeSort {
                         printCount++;
                     }
                 }
-                outputBuffer.rewind();
-                outputFile.seek(writeIndex);
-                outputFile.write(out);
-                writeIndex += out.length;
-                outputBuffer.clear();
+                writeIndex += helperSimple(outputBuffer, outputFile, out,
+                        writeIndex, outputIndex);
                 outputIndex = 0;
 
             }
@@ -321,6 +287,37 @@ public class MergeSort {
         }
     }
 
+    /**
+     * 
+     * @param outBuffer
+     *            byte bugger, output buffer
+     * @param outFile
+     *            is the file that the sorted run will be printed out to
+     * @param out
+     *            output buffer
+     * @param writeInd
+     *            index of where the file will be writing to
+     * @param outInd
+     *            index of output
+     * @return long in order to add to writeIndex of main method
+     * @throws IOException
+     */
+    private static long helperSimple(ByteBuffer outBuffer,
+            RandomAccessFile outFile, byte[] out, long writeInd, int outInd)
+            throws IOException {
+        outBuffer.rewind();
+        outFile.seek(writeInd);
+        outFile.write(out);
+        outBuffer.clear();
+        return out.length;
+    }
+
+    private static int outputBufferHelper(ByteBuffer outBuffer, Record[] array,
+            int minIndex) {
+        outBuffer.putLong(array[minIndex].getLong());
+        outBuffer.putDouble(array[minIndex].getDouble());
+        return 16;
+    }
 
     /**
      * Reads in the next block of bytes from the specified run
@@ -345,21 +342,13 @@ public class MergeSort {
      *            is the input Buffer
      * @throws IOException
      */
-    private static void readIn(
-        RandomAccessFile file,
-        Record[] array,
-        byte[] in,
-        byte[] out,
-        Run tempRun,
-        int[] arrStart,
-        int[] arrEnd,
-        int index,
-        ByteBuffer inputBuffer)
-        throws IOException {
+    private static void readIn(RandomAccessFile file, Record[] array, byte[] in,
+            byte[] out, Run tempRun, int[] arrStart, int[] arrEnd, int index,
+            ByteBuffer inputBuffer) throws IOException {
 
-        int tempBeg = (int)tempRun.getCurr();
-        file.seek((long)tempBeg);
-        int tempEnd = (int)tempRun.getEnd();
+        int tempBeg = (int) tempRun.getCurr();
+        file.seek((long) tempBeg);
+        int tempEnd = (int) tempRun.getEnd();
         int tempDiff;
         if (index == 0) {
             arrStart[index] = 0;
